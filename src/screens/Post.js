@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View ,Text, TouchableOpacity,Alert, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, View, Text, TouchableOpacity, Alert, Platform } from 'react-native';
 import { Surface, Title, TextInput } from 'react-native-paper';
 import ModalView from '../components/ModalView';
 import PostCardItem from '../components/PostCardItem';
-
-import { useDispatch, useSelector } from 'react-redux'
-import { addPost, editPost, deletePost } from '../reducers/postReducer'
+import { useDispatch, useSelector } from 'react-redux';
+import { addPost, editPost, deletePost } from '../reducers/postReducer';
+import * as SecureStore from 'expo-secure-store';
+import { AuthContext } from '../components/context';
 
 function Post() {
+    const { signOut } = React.useContext(AuthContext);
     const dispatch = useDispatch();
     const posts = useSelector(state => state.posts);
     const [visible, setVisible] = useState(false);
@@ -16,8 +18,9 @@ function Post() {
     const [author, setAuthor] = useState('');
     const [modalTitle, setModalTitle] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const onSubmitPost = () => {
+    
+   
+    const onSubmitPost = (title) => {
         if (title.trim().length === 0) {
             Alert.alert("You need to enter a Post");
             setTitle("");
@@ -33,12 +36,13 @@ function Post() {
         updatePost();
     };
 
-    const onDeletePost = (id) => {
+    const onDeletePost = async (id) => {
         dispatch(
             deletePost({
                 id: id,
             })
         );
+        await SecureStore.deleteItemAsync('token')
     };
 
     const onEditPost = (id, title, author) => {
@@ -76,9 +80,9 @@ function Post() {
         setLoading(true);
         posts
     }
-
+   
     return (
-        <View  style={styles.container}>
+        <View style={styles.container}>
             <Surface style={styles.header}>
                 <Title>Posts</Title>
                 <TouchableOpacity style={styles.button} onPress={add}>
@@ -100,6 +104,12 @@ function Post() {
                     />
                 )}
             />
+            <TouchableOpacity
+                style={{ backgroundColor: 'red', paddingHorizontal: 50, paddingVertical: 15, margin: 10 }}
+                onPress={signOut}
+            >
+                <Text style={{ color: 'white' }}>Sign out</Text>
+            </TouchableOpacity>
 
             <ModalView
                 visible={visible}

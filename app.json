@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-redux-crud",
-    "slug": "expo-redux-crud",
+    "name": "expo-redux-auth-crud",
+    "slug": "expo-redux-auth-crud",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
